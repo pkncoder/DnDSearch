@@ -29,41 +29,6 @@ def url():
     click.echo('https://www.dnd5eapi.co/')
 
 
-@list_.command(help = 'This shows all of the possible quarries for the advanced search.')
-def quarries():
-    things = requests.get("https://www.dnd5eapi.co/api/", timeout=90)
-    results_dict = things.json()
-
-    table = Table(title="DnD Api Quarries", show_lines=True)
-
-    table.add_column("Index Number", justify="left", style="blue")
-    table.add_column("Quarry Name", justify="center", style="red")
-
-    for i, quar in enumerate(results_dict):
-        table.add_row(str(i), quar)
-
-
-    console.print(table)
-
-
-@list_.command(help = 'This lists the data of a monster of choice.')
-def monster():
-    data = requests.get(f"https://www.dnd5eapi.co/api/monsters/", timeout=90)
-    data = data.json()['results']
-
-    table = Table(title="DnD Monsters", show_lines=True)
-
-    table.add_column("Index Number", justify="left", style="blue")
-    table.add_column("Monster Name", justify="center", style="red")
-    table.add_column("Monster Index", justify='center', style='purple')
-
-    for i, mons in enumerate(data): 
-        table.add_row(str(i), mons["name"], mons['index'])
-
-
-    console.print(table)
-
-
 @find.command(help="Gives info on a monster, put quotation marks around monster.")
 @click.argument('monster')
 def monster(monster):
@@ -188,3 +153,145 @@ def quarrysearch(quarry):
 
                 where = input("Where would you like to continue on to: ")
                 quarry_data = quarry_data[where]
+
+@list_.command()
+def spells():
+    data = requests.get(f"https://www.dnd5eapi.co/api/spells/", timeout=90)
+    data = data.json()['results']
+
+    table = Table(title="DnD Spells", show_lines=True)
+
+    table.add_column("Index Number", justify="left", style="blue")
+    table.add_column("Spell Name", justify="center", style="red")
+    table.add_column("Spell Index", justify='center', style='purple')
+
+    for i, mons in enumerate(data): 
+        table.add_row(str(i), mons["name"], mons['index'])
+
+
+    console.print(table)
+
+
+@list_.command()
+def classes():
+    data = requests.get(f"https://www.dnd5eapi.co/api/classes/", timeout=90)
+    data = data.json()['results']
+
+    table = Table(title="DnD Classes", show_lines=True)
+
+    table.add_column("Index Number", justify="left", style="blue")
+    table.add_column("Class Name", justify="center", style="red")
+    table.add_column("Class Index", justify='center', style='purple')
+
+    for i, mons in enumerate(data): 
+        table.add_row(str(i), mons["name"], mons['index'])
+
+
+    console.print(table)
+
+
+@list_.command
+def skills():
+    data = requests.get(f"https://www.dnd5eapi.co/api/skills/", timeout=90)
+    data = data.json()['results']
+
+    table = Table(title="DnD Skills", show_lines=True)
+
+    table.add_column("Index Number", justify="left", style="blue")
+    table.add_column("Skill Name", justify="center", style="red")
+    table.add_column("Skill Index", justify='center', style='purple')
+
+    for i, mons in enumerate(data): 
+        table.add_row(str(i), mons["name"], mons['index'])
+
+
+    console.print(table)
+
+
+@list_.command
+def magicitems():
+    data = requests.get(f"https://www.dnd5eapi.co/api/magic-items/", timeout=90)
+    data = data.json()['results']
+
+    table = Table(title="DnD Magic Items", show_lines=True)
+
+    table.add_column("Index Number", justify="left", style="blue")
+    table.add_column("Item Name", justify="center", style="red")
+    table.add_column("Item Index", justify='center', style='purple')
+
+    for i, mons in enumerate(data): 
+        table.add_row(str(i), mons["name"], mons['index'])
+
+
+    console.print(table)
+
+
+@list_.command
+def languages():
+    data = requests.get(f"https://www.dnd5eapi.co/api/languages/", timeout=90)
+    data = data.json()['results']
+
+    table = Table(title="DnD Language", show_lines=True)
+
+    table.add_column("Index Number", justify="left", style="blue")
+    table.add_column("Language Name", justify="center", style="red")
+    table.add_column("Language Index", justify='center', style='purple')
+
+    for i, mons in enumerate(data): 
+        table.add_row(str(i), mons["name"], mons['index'])
+
+
+    console.print(table)
+
+
+@list_.command
+def features():
+    data = requests.get(f"https://www.dnd5eapi.co/api/features/", timeout=90)
+    data = data.json()['results']
+
+    table = Table(title="DnD Classes", show_lines=True)
+
+    table.add_column("Index Number", justify="left", style="blue")
+    table.add_column("Feature Name", justify="center", style="red")
+    table.add_column("Feature Index", justify='center', style='purple')
+
+    for i, mons in enumerate(data): 
+        table.add_row(str(i), mons["name"], mons['index'])
+
+
+    console.print(table)
+
+
+@list_.command(help = 'This shows all of the possible quarries for the advanced search.')
+def quarries():
+    things = requests.get("https://www.dnd5eapi.co/api/", timeout=90)
+    results_dict = things.json()
+
+    table = Table(title="DnD Api Quarries", show_lines=True)
+
+    table.add_column("Index Number", justify="left", style="blue")
+    table.add_column("Quarry Name", justify="center", style="red")
+
+    for i, quar in enumerate(results_dict):
+        table.add_row(str(i), quar)
+
+
+    console.print(table)
+
+
+@list_.command(help = 'This lists the data of a monster of choice.')
+def monsters():
+    data = requests.get(f"https://www.dnd5eapi.co/api/monsters/", timeout=90)
+    data = data.json()['results']
+
+    table = Table(title="DnD Monsters", show_lines=True)
+
+    table.add_column("Index Number", justify="left", style="blue")
+    table.add_column("Monster Name", justify="center", style="red")
+    table.add_column("Monster Index", justify='center', style='purple')
+
+    for i, mons in enumerate(data): 
+        table.add_row(str(i), mons["name"], mons['index'])
+
+
+    console.print(table)
