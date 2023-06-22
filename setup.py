@@ -2,7 +2,7 @@ from setuptools import setup
 
 setup(
     name='DnDSearch',
-    version='0.1.0',
+    version='1.0.0',
     py_modules=['dndsear'],
     install_requires=[
         'click',

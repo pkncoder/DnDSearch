@@ -1,7 +1,6 @@
 import click
 import requests
 
-
 from rich.pretty import pprint
 from rich.console import Console
 from rich.table import Table
@@ -27,7 +26,7 @@ def find():
 
 @cli.command(help = 'This is the base url for the api, this is not created by me.')
 def url():
-    click.echo('https://www.dnd5eapi.co')
+    click.echo('https://www.dnd5eapi.co/')
 
 
 @list_.command(help = 'This shows all of the possible quarries for the advanced search.')
@@ -42,6 +41,7 @@ def quarries():
 
     for i, quar in enumerate(results_dict):
         table.add_row(str(i), quar)
+
 
     console.print(table)
 
@@ -91,86 +91,100 @@ def monster(monster):
 
     while True:
 
-        if type(query_data) in [str, int]:
-            click.echo(query_data)
-            break
-
-        elif type(query_data) == dict:
-
-            new_table = Table(title=f"{monster.capitalize()}'s Search Quarries", show_lines=True)
-
-            new_table.add_column("Index", justify="left", style="blue")
-            new_table.add_column("Key", justify="center", style="red")
-
-            for i, info in enumerate(query_data): 
-                new_table.add_row(str(i), info)
-
-
-            console.print(new_table)
-
-            where = input("Where would you like to continue on to: ")
-            query_data = query_data[where]
-        
-        elif type(query_data) == list:
+        if where == 'url':
             pprint(query_data)
+            url = query_data
 
-            where = int(input("Where would you like to focus in on. Number: "))
-            query_data = query_data[where]
+            query_data = requests.get(f'https://www.dnd5eapi.co{url}')
+            query_data = query_data.json()
+
+            where = ""
+
+        else:
+            if type(query_data) in [str, int]:
+                click.echo(query_data)
+                break
+
+            elif type(query_data) == dict:
+
+                new_table = Table(title=f"{monster.capitalize()}'s Search Quarries", show_lines=True)
+
+                new_table.add_column("Index", justify="left", style="blue")
+                new_table.add_column("Key", justify="center", style="red")
+
+                for i, info in enumerate(query_data): 
+                    new_table.add_row(str(i), info)
 
 
-@find.command(help = 'This is the url command to search through more spesific parts. Dont include "https://dnd5eapi.co/api/"')
+                console.print(new_table)
+
+                where = input("Where would you like to continue on to: ")
+                query_data = query_data[where]
+            
+            elif type(query_data) == list:
+                pprint(query_data)
+
+                where = int(input("Where would you like to focus in on. Number: "))
+                query_data = query_data[where - 1]
+
+
+@find.command(help = 'This is the url command to search through more spesific parts. Dont include "https://www.dnd5eapi.co/api/"')
 @click.argument('quarry')
 def quarrysearch(quarry):
 
-    data = requests.get(f"https://www.dnd5eapi.co/api/{quarry}/", timeout=90)
-    data = data.json()['results']
+    data = requests.get(f"https://www.dnd5eapi.co/api/{quarry}")
+    data = data.json()
 
-    pprint(data)
+    table = Table(title=f"Search Quarries", show_lines=True)
 
-    where = int(input("What number do you wish to go to: "))
+    table.add_column("Index", justify="left", style="blue")
+    table.add_column("Key", justify="center", style="red")
 
-    pprint(data[where - 1]['url'])
+    for i, info in enumerate(data): 
+        table.add_row(str(i), info)
+        quarry_data = data
 
-    url = data[where - 1]['url']
 
-    
+    console.print(table)
 
-    quarry_data = requests.get(f"https://www.dnd5eapi.co{url}")
-    quarry_data = quarry_data.json()
-
+    where = input("Where would you like to continue on to: ")
+    quarry_data = quarry_data[where]
 
     while True:
 
-        if type(quarry_data) in [str, int]:
-            print(quarry_data)
-            break
-    
-
-        elif type(quarry_data) == list:
+        if where == 'url':
             pprint(quarry_data)
-            where = int(input("Where would you like to go, integers: "))
+            url = quarry_data
 
-            url = quarry_data[where - 1]['url']
-
-            quarry_data = requests.get(f"https://www.dnd5eapi.co{url}")
+            quarry_data = requests.get(f'https://www.dnd5eapi.co{url}')
             quarry_data = quarry_data.json()
 
-            quarry_data = quarry_data 
+            where = ""
             
+        else:
+            if type(quarry_data) in [str, int]:
+                print(quarry_data)
+                break
 
-        elif type(quarry_data) == dict:
-            
-            new_table = Table(title=f'Search Quarries', show_lines=True)
+            elif type(quarry_data) == list:
 
-            new_table.add_column("Index", justify="left", style="blue")
-            new_table.add_column("Key", justify="center", style="red")
+                pprint(quarry_data)
 
-            for i, info in enumerate(quarry_data): 
-                new_table.add_row(str(i), info)
+                where = int(input("Where would you like to go, integers: "))
+                quarry_data = quarry_data[where - 1]
+
+            elif type(quarry_data) == dict:
+                
+                new_table = Table(title=f'Search Quarries', show_lines=True)
+
+                new_table.add_column("Index", justify="left", style="blue")
+                new_table.add_column("Key", justify="center", style="red")
+
+                for i, info in enumerate(quarry_data): 
+                    new_table.add_row(str(i), info)
 
 
-            console.print(new_table)
+                console.print(new_table)
 
-            where = input("Where would you like to continue on to: ")
-            
-            quarry_data = quarry_data[where]
+                where = input("Where would you like to continue on to: ")
+                quarry_data = quarry_data[where]
