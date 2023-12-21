@@ -9,24 +9,89 @@ console = Console()
 
 @click.group()
 def cli():
+    """Dndsear: main group"""
     pass
 
 
 @cli.group(name='list')
 def list_():
-    """This is the home group for listing data."""
+    """List: this is the home group for listing data."""
     pass
 
 
 @cli.group()
 def find():
-    """This is the home group for searching and finding specific data."""
+    """Find: this is the home group for searching and finding specific data."""
     pass
 
 
-@cli.command(help = 'This is the base url for the api, this is not created by me.')
+@cli.command(help='This is the base url for the api, this is not created by me.')
 def url():
-    click.echo('https://www.dnd5eapi.co/')
+    console.print('https://www.dnd5eapi.co/', style='blue')
+
+
+@find.command(help="Gives info on a spell, put quotation marks around spell.")
+@click.argument('spell')
+def spell(spell):
+
+    spell = spell.lower()
+    spell = spell.replace(' ', '-')
+
+    data = requests.get(f"https://www.dnd5eapi.co/api/spells/{spell}")
+    data = data.json()
+
+    table = Table(title=f"{spell.capitalize()}'s Search Quarries", show_lines=True)
+
+    table.add_column("Index", justify="left", style="blue")
+    table.add_column("Key", justify="center", style="red")
+
+    for i, info in enumerate(data): 
+        table.add_row(str(i), info)
+        query_data = data
+
+
+    console.print(table)
+
+    where = input("Where would you like to continue on to: ")
+    query_data = query_data[where]
+
+    while True:
+
+        if where == 'url':
+            pprint(query_data)
+            url = query_data
+
+            query_data = requests.get(f'https://www.dnd5eapi.co{url}')
+            query_data = query_data.json()
+
+            where = ""
+
+        else:
+            if type(query_data) in [str, int]:
+                console.print(query_data, style='blue')
+                break
+
+            elif type(query_data) == dict:
+
+                new_table = Table(title=f"{spell.capitalize()}'s Search Quarries", show_lines=True)
+
+                new_table.add_column("Index", justify="left", style="blue")
+                new_table.add_column("Key", justify="center", style="red")
+
+                for i, info in enumerate(query_data): 
+                    new_table.add_row(str(i), info)
+
+
+                console.print(new_table)
+
+                where = input("Where would you like to continue on to: ")
+                query_data = query_data[where]
+            
+            elif type(query_data) == list:
+                pprint(query_data)
+
+                where = int(input("Where would you like to focus in on. Number: "))
+                query_data = query_data[where - 1]
 
 
 @find.command(help="Gives info on a monster, put quotation marks around monster.")
@@ -67,7 +132,7 @@ def monster(monster):
 
         else:
             if type(query_data) in [str, int]:
-                click.echo(query_data)
+                console.print(query_data, style='blue')
                 break
 
             elif type(query_data) == dict:
@@ -154,7 +219,23 @@ def quarrysearch(quarry):
                 where = input("Where would you like to continue on to: ")
                 quarry_data = quarry_data[where]
 
-@list_.command()
+
+@list_.command(help='This lists the possible list commands.')
+def lists():
+    listcommands = ['spells', 'classes', 'skills', 'magicitems', 'languages', 'features', 'quarries', 'monsters']
+
+    table = Table(title="DnD Spells", show_lines=True)
+
+    table.add_column("Command Number", justify="left", style="blue")
+    table.add_column("Command Name", justify="center", style="red")
+
+    for i, comm in enumerate(listcommands):
+        table.add_row(str(i), comm)
+
+    console.print(table)
+
+
+@list_.command(help="This lists the spells.")
 def spells():
     data = requests.get(f"https://www.dnd5eapi.co/api/spells/", timeout=90)
     data = data.json()['results']
@@ -172,7 +253,7 @@ def spells():
     console.print(table)
 
 
-@list_.command()
+@list_.command(help="This lists the classes.")
 def classes():
     data = requests.get(f"https://www.dnd5eapi.co/api/classes/", timeout=90)
     data = data.json()['results']
@@ -190,7 +271,7 @@ def classes():
     console.print(table)
 
 
-@list_.command
+@list_.command(help="This lists the skills.")
 def skills():
     data = requests.get(f"https://www.dnd5eapi.co/api/skills/", timeout=90)
     data = data.json()['results']
@@ -208,7 +289,7 @@ def skills():
     console.print(table)
 
 
-@list_.command
+@list_.command(help="This lists the magic.")
 def magicitems():
     data = requests.get(f"https://www.dnd5eapi.co/api/magic-items/", timeout=90)
     data = data.json()['results']
@@ -226,7 +307,7 @@ def magicitems():
     console.print(table)
 
 
-@list_.command
+@list_.command(help="This lists the languages.")
 def languages():
     data = requests.get(f"https://www.dnd5eapi.co/api/languages/", timeout=90)
     data = data.json()['results']
@@ -244,7 +325,7 @@ def languages():
     console.print(table)
 
 
-@list_.command
+@list_.command(help="This lists the features from classes & levels.")
 def features():
     data = requests.get(f"https://www.dnd5eapi.co/api/features/", timeout=90)
     data = data.json()['results']
@@ -262,7 +343,7 @@ def features():
     console.print(table)
 
 
-@list_.command(help = 'This shows all of the possible quarries for the advanced search.')
+@list_.command(help = 'This shows the possible quarries for the advanced search.')
 def quarries():
     things = requests.get("https://www.dnd5eapi.co/api/", timeout=90)
     results_dict = things.json()
